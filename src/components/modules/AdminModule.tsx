@@ -353,7 +353,7 @@ const AdminModule = ({ isManager = false }: { isManager?: boolean }) => {
         const { error: emailError } = await supabase.auth.resetPasswordForEmail(
           newUser.email,
           {
-            redirectTo: `${window.location.origin}/auth`,
+            redirectTo: `${window.location.origin}/reset-password`,
           }
         );
 
@@ -392,6 +392,83 @@ const AdminModule = ({ isManager = false }: { isManager?: boolean }) => {
     }
   };
 
+  // New function to create admin user with specific credentials
+  const handleCreateAdminUser = async () => {
+    try {
+      const adminEmail = "nikhil@applywizz.com";
+      const adminPassword = "Nikhil@321";
+      const adminName = "Nikhil Admin";
+      const adminRole = "admin";
+  
+      // Create user account in Supabase with password
+      const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+        email: adminEmail,
+        password: adminPassword,
+        email_confirm: false, // Set to false so we can send confirmation email
+        user_metadata: {
+          full_name: adminName,
+          role: adminRole,
+        },
+      });
+  
+      if (authError) throw authError;
+  
+      // Insert user data into user_accounts table
+      const { error: dbError } = await (supabase as any)
+        .from('user_accounts')
+        .insert({
+          id: authData.user.id,
+          full_name: adminName,
+          email: adminEmail,
+          role: adminRole,
+          manager: "Self-Managed",
+          status: "paid",
+        });
+  
+      if (dbError) throw dbError;
+  
+      // Send confirmation email
+      const { error: confirmError } = await supabase.auth.admin.generateLink({
+        type: 'signup',
+        email: adminEmail,
+        options: {
+          redirectTo: `${window.location.origin}/reset-password`,
+        }
+      });
+  
+      if (confirmError) {
+        console.error('Confirmation email error:', confirmError);
+        // Try alternative method
+        const { error: altEmailError } = await supabase.auth.resend({
+          type: 'signup',
+          email: adminEmail,
+          options: {
+            emailRedirectTo: `${window.location.origin}/reset-password`,
+          }
+        });
+        
+        if (altEmailError) {
+          console.error('Alternative email error:', altEmailError);
+        }
+      }
+      
+      toast({
+        title: "Admin User Created Successfully",
+        description: `Admin user ${adminEmail} has been created with role: ${adminRole}. A confirmation email has been sent.`,
+      });
+  
+      // Refresh user list
+      fetchUsers();
+      
+    } catch (error: any) {
+      console.error('Error creating admin user:', error);
+      toast({
+        title: "Error Creating Admin User",
+        description: error.message || "Failed to create admin user. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
 
   const filteredUsers = users.filter((user) => {
     const searchLower = searchTerm.toLowerCase();
@@ -495,14 +572,24 @@ const AdminModule = ({ isManager = false }: { isManager?: boolean }) => {
                 </div>
               )}
               {!isManager && (
-                <Button
-                  size="sm"
-                  onClick={handleCreateUser}
-                  className="bg-primary hover:bg-primary/90 text-foreground"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Create User
-                </Button>
+                <>
+                  <Button
+                    size="sm"
+                    onClick={handleCreateAdminUser}
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Create Admin
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={handleCreateUser}
+                    className="bg-primary hover:bg-primary/90 text-foreground"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Create User
+                  </Button>
+                </>
               )}
               {isManager && (
                 <Button
@@ -517,6 +604,7 @@ const AdminModule = ({ isManager = false }: { isManager?: boolean }) => {
             </div>
           </CardTitle>
         </CardHeader>
+
         <CardContent className="space-y-4">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
