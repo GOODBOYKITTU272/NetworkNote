@@ -1,0 +1,9 @@
+create table public.hr_details (
+  id bigserial not null,
+  name text not null,
+  email public.citext not null,
+  designation text not null,
+  company text not null,
+  constraint hr_details_pkey primary key (id),
+  constraint hr_details_email_key unique (email)
+) TABLESPACE pg_default;

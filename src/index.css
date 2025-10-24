@@ -1,0 +1,124 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* NetworkNote Pastel Palette */
+    --background: 0 0% 100%;
+    --foreground: 210 50% 15%;
+    
+    /* Primary: Mint */
+    --primary: 160 47% 80%;
+    --primary-foreground: 210 50% 15%;
+    
+    /* Secondary: Sky Blue */
+    --secondary: 210 68% 55%;
+    --secondary-foreground: 0 0% 100%;
+    
+    /* Accent: Blush */
+    --accent: 0 65% 92%;
+    --accent-foreground: 210 50% 15%;
+    
+    /* Muted */
+    --muted: 220 15% 96%;
+    --muted-foreground: 0 0% 45%;
+    
+    /* Card: Glassmorphic */
+    --card: 0 0% 100%;
+    --card-foreground: 210 50% 15%;
+    
+    /* Popover */
+    --popover: 0 0% 100%;
+    --popover-foreground: 210 50% 15%;
+    
+    /* Destructive */
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+    
+    /* Border & Input */
+    --border: 220 15% 90%;
+    --input: 220 15% 90%;
+    --ring: 160 47% 70%;
+    
+    /* Radius */
+    --radius: 1rem;
+    
+    /* Custom gradients */
+    --gradient-mint: linear-gradient(135deg, hsl(160, 47%, 80%) 0%, hsl(180, 50%, 75%) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(160, 47%, 80%) 0%, hsl(210, 68%, 55%) 50%, hsl(0, 65%, 92%) 100%);
+    --gradient-soft: linear-gradient(180deg, hsl(160, 47%, 95%) 0%, hsl(0, 65%, 98%) 100%);
+    
+    /* Glass effect */
+    --glass-bg: rgba(255, 255, 255, 0.4);
+    --glass-border: rgba(255, 255, 255, 0.6);
+    
+    /* Shadows */
+    --shadow-elegant: 0 10px 30px -10px rgba(0, 0, 0, 0.06);
+    --shadow-glow: 0 0 40px rgba(182, 226, 211, 0.3);
+    
+    /* Transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-spring: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, hsl(160, 47%, 95%) 0%, hsl(0, 65%, 98%) 100%);
+    background-attachment: fixed;
+  }
+}
+
+@layer utilities {
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+  }
+  
+  .shadow-elegant {
+    box-shadow: var(--shadow-elegant);
+  }
+  
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
+  }
+  
+  .transition-smooth {
+    transition: var(--transition-smooth);
+  }
+  
+  .transition-spring {
+    transition: var(--transition-spring);
+  }
+  
+  .hover-scale {
+    @apply transition-smooth;
+  }
+  
+  .hover-scale:hover {
+    transform: scale(1.05);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
